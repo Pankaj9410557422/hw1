@@ -11,7 +11,7 @@ for(let idx=0; idx<input.length;idx++){
          }else{
              console.log("File does not exists");
          }
-
+         idx+=1;
     }else if(input[idx]=="-n"){
         if(fs.existsSync(input[idx+1])){
             let data = fs.readFileSync(input[idx+1]);
@@ -23,6 +23,7 @@ for(let idx=0; idx<input.length;idx++){
         }else{
              console.log("File does not exists");
          }
+         idx+=1;
         
     }else if(input[idx]=="-b"){
         if(fs.existsSync(input[idx+1])){
@@ -41,6 +42,7 @@ for(let idx=0; idx<input.length;idx++){
         }else{
              console.log("File does not exists");
          }
+         idx+=1;
     }else{
         if(fs.existsSync(input[idx])){
            let data = fs.readFileSync(input[idx],'utf8');
