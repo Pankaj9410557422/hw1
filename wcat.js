@@ -1,54 +1,57 @@
+
 let fs = require("fs");
-let path = require("path");
-
-
 let input = process.argv.slice(2);
-for(let idx=0; idx<input.length;idx++){
-    if(input[idx]=="-s"){
-        if(fs.existsSync(input[idx+1])){
-            let data = fs.readFileSync(input[idx+1],'utf8');
-            console.log(data.replace(/([\r\n]){2,}/g, '\n\n'));
-         }else{
-             console.log("File does not exists");
-         }
-         idx+=1;
-    }else if(input[idx]=="-n"){
-        if(fs.existsSync(input[idx+1])){
-            let data = fs.readFileSync(input[idx+1]);
-            let to_string = data.toString();
-            let split_lines = to_string.split("\n");
-            for(let idx=1; idx<=split_lines.length;idx++){
-                console.log(idx+" "+split_lines[idx-1]);
-            }
-        }else{
-             console.log("File does not exists");
-         }
-         idx+=1;
-        
-    }else if(input[idx]=="-b"){
-        if(fs.existsSync(input[idx+1])){
-            let data = fs.readFileSync(input[idx+1]);
-            let to_string = data.toString();
-            let split_lines = to_string.split("\n");
-            let count=1;
-            for(let idx=0; idx<split_lines.length;idx++){
-                if(split_lines[idx] !="\r"){
-                    console.log(count+" "+split_lines[idx]);
-                    count++;
-                }else{
-                    console.log(split_lines[idx]);
-                }
-            }
-        }else{
-             console.log("File does not exists");
-         }
-         idx+=1;
-    }else{
-        if(fs.existsSync(input[idx])){
-           let data = fs.readFileSync(input[idx],'utf8');
-           console.log(data);
-        }else{
-            console.log("File does not exists");
-        }
-    }
+
+let print = require('./commands/print');
+let printMultiple = require('./commands/printMultiple');
+let singleLineBreak = require('./commands/singleLineBreak');
+let numberLine = require('./commands/numberLine');
+let numNonEmptyLine = require('./commands/numNonEmptyLine');
+
+function isFile(filepath){
+    return fs.existsSync(filepath);
+}
+
+function readLine(filePath) {
+	let data = fs.readFileSync(filePath, 'utf8');
+	return data;
+}
+
+if (input.length == 1) {
+	if (isFile(input[0])) {
+		print.printFn(input[0]);
+	} else {
+		console.log('File does not exists');
+	}
+} else if (input.length > 1 && isFile(input[0])) {
+	printMultiple.printMultipleFn(input);
+} else if (input.length > 0) {
+	let filePath = input[input.length - 1];
+
+	if (isFile(filePath)) {
+		let data = readLine(filePath);
+		for (let i = 0; i < input.length - 1; i++) {
+			if (
+				(input[i] == '-n' && input[i + 1] == '-b') ||
+				(input[i] == '-b' && input[i + 1] == '-n')
+			) {
+				if (input[i] == '-n') {
+					numberLine.numberLineFn(data);
+				} else {
+					numNonEmptyLine.numNonEmptyLineFn(data);
+				}
+				return;
+			} else if (input[i] == '-s') {
+				singleLineBreak.singleLineBreakFn(data);
+			} else if (input[i] == '-n') {
+				numberLine.numberLineFn(data);
+			} else if (input[i] == '-b') {
+				numNonEmptyLine.numNonEmptyLineFn(data);
+			}
+		}
+	} else {
+		console.log('File does not exists')
+	}
+} else {
+	console.log('Wrong Command.');
 }
